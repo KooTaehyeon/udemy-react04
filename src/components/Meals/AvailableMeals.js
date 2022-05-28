@@ -1,37 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './AvailableMeals.module.css';
 import Card from '../UI/Card';
 import MealItem from './MealItem/MealItem';
 //더미
-const DUMMY_MEALS = [
-  {
-    id: 'm1',
-    name: 'Sushi',
-    description: 'Finest fish and veggies',
-    price: 22.99,
-  },
-  {
-    id: 'm2',
-    name: 'Schnitzel',
-    description: 'A german specialty!',
-    price: 16.5,
-  },
-  {
-    id: 'm3',
-    name: 'Barbecue Burger',
-    description: 'American, raw, meaty',
-    price: 12.99,
-  },
-  {
-    id: 'm4',
-    name: 'Green Bowl',
-    description: 'Healthy...and green...',
-    price: 18.99,
-  },
-];
 
 const AvailableMeals = () => {
-  const mealsList = DUMMY_MEALS.map((meals) => {
+  const [meals, setMeals] = useState([]);
+  const [loading, setloading] = useState(false);
+  useEffect(() => {
+    const fetchMeals = async () => {
+      const response = await fetch(
+        'https://udemy-react-f19a8-default-rtdb.firebaseio.com/meals.json'
+      );
+      const responseData = await response.json();
+
+      const loadedMeals = [];
+      for (const key in responseData) {
+        loadedMeals.push({
+          id: key,
+          name: responseData[key].name,
+          description: responseData[key].description,
+          price: responseData[key].price,
+        });
+      }
+      setMeals(loadedMeals);
+      setloading(true);
+    };
+    fetchMeals(meals);
+  }, []);
+  if (!loading) {
+    return (
+      <section className={styles.MealsLoading}>
+        <p>로딩중...</p>
+      </section>
+    );
+  }
+
+  const mealsList = meals.map((meals) => {
     return (
       <MealItem
         key={meals.id}
