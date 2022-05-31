@@ -18,6 +18,15 @@ const Cart = (props) => {
   const orderHandler = () => {
     setIsCheck(true);
   };
+  const submitOrderHandler = (userData) => {
+    fetch('https://udemy-react-f19a8-default-rtdb.firebaseio.com/orders.json', {
+      method: 'POST',
+      body: JSON.stringify({
+        user: userData,
+        orderedItems: cartCtx.items,
+      }),
+    });
+  };
   console.log(isCheck);
   const cartItem = (
     <ul className={styles['cart-items']}>
@@ -54,7 +63,9 @@ const Cart = (props) => {
         <span>Total Amount</span>
         <span>{totalAmount}</span>
       </div>
-      {isCheck && <Checkout onCancel={props.onClose} />}
+      {isCheck && (
+        <Checkout onConfirm={submitOrderHandler} onCancel={props.onClose} />
+      )}
       {!isCheck && moalAcions}
     </Modal>
   );
